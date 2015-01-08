@@ -54,9 +54,10 @@ namespace Runner.Consumer
 
         static void Consume()
         {
-            var consumer = new ObservableConsumer<string>(channel, _queueSettings);
+            //var consumer = new ObservableConsumer<string>(channel, _queueSettings);
+            var consumer = new BalancingObservableConsumer<string>(channel, _queueSettings);
 
-            consumer.Subscribe(message => Console.WriteLine("Received: {0}", message.Body));
+            consumer.Subscribe(message => Console.WriteLine("Received: {0}", message.Body), () => { }, tokenSource.Token);
         }
     }
 }

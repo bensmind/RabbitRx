@@ -54,9 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\BalancingObservableConsumer.cs" />
     <Compile Include="Message\JsonRabbitMessage.cs" />
     <Compile Include="Message\IRabbitMessage.cs" />
-    <Compile Include="Client\ObservableBasicConsumer.cs" />
+    <Compile Include="Client\ObservableConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

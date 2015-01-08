@@ -25,7 +25,6 @@ namespace RabbitRx.Client
 
         public QueueSettings QueueSettings { get; private set; }
 
-        //protected readonly ConcurrentQueue<IRabbitMessage<TData>> Queue = new ConcurrentQueue<IRabbitMessage<TData>>();
         private ICollection<IObserver<IRabbitMessage<TData>>> observers = new List<IObserver<IRabbitMessage<TData>>>();
         
         public bool IsRunning { get; protected set; }
@@ -34,11 +33,11 @@ namespace RabbitRx.Client
 
         public event ConsumerCancelledEventHandler ConsumerCancelled;
 
-        public IDisposable Subscribe(IObserver<IRabbitMessage<TData>> observer)
+        public virtual IDisposable Subscribe(IObserver<IRabbitMessage<TData>> observer)
         {
             if (!IsRunning)
             {
-                //Model.BasicQos(0, 100, false);
+                Model.BasicQos(0, 100, false);
                 Model.BasicConsume(QueueSettings.Name, QueueSettings.NoAck, QueueSettings.ConsumerName, this);
                 IsRunning = true;
             }
@@ -100,7 +99,12 @@ namespace RabbitRx.Client
             throw new NotImplementedException();
         }
 
-        public void OnNext(IRabbitMessage<TData> value)
+        public virtual void OnNext(IRabbitMessage<TData> value)
+        {
+            Publish(value);
+        }
+
+        protected virtual void Publish(IRabbitMessage<TData> value)
         {
             foreach (var observer in observers)
             {
