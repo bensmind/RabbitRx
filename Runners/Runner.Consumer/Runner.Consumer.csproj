@@ -68,7 +68,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RabbitRx\RabbitRx.csproj">
+    <ProjectReference Include="..\..\RabbitRx\RabbitRx.csproj">
       <Project>{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}</Project>
       <Name>RabbitRx</Name>
     </ProjectReference>
