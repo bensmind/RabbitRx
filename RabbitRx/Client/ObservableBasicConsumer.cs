@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
+using System.Threading;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,7 +13,7 @@ using RabbitRx.Message;
 
 namespace RabbitRx.Client
 {
-    public class ObservableConsumer<TData> : IObservable<IRabbitMessage<TData>>, IBasicConsumer, IDisposable
+    public class ObservableConsumer<TData> : ISubject<IRabbitMessage<TData>>, IBasicConsumer, IDisposable
     {
         public ObservableConsumer(IModel model, QueueSettings queueSettings)
         {
@@ -90,15 +91,29 @@ namespace RabbitRx.Client
                 RawBody = body
             };
 
-            
-            foreach (var o in observers)
-            {
-                o.OnNext(message);
-            }
+            OnNext(message);
         }
 
 
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(IRabbitMessage<TData> value)
+        {
+            foreach (var observer in observers)
+            {
+                observer.OnNext(value);
+            }
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnCompleted()
         {
             throw new NotImplementedException();
         }
@@ -120,6 +135,7 @@ namespace RabbitRx.Client
                     _observers.Remove(_observer);
             }
         }
+
     }
 
     public class QueueSettings

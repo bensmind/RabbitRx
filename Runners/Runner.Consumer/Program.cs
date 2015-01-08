@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
 using RabbitRx.Client;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+
 
 namespace Runner.Consumer
 {
@@ -53,7 +56,7 @@ namespace Runner.Consumer
         {
             var consumer = new ObservableConsumer<string>(channel, _queueSettings);
 
-            consumer.Subscribe(message => Console.WriteLine("Received: {0}", message.Body),tokenSource.Token);
+            consumer.Subscribe(message => Console.WriteLine("Received: {0}", message.Body));
         }
     }
 }
