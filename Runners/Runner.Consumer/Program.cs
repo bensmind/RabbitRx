@@ -10,6 +10,7 @@ using RabbitMQ.Client.Framing;
 using RabbitRx.Client;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using RabbitRx.Queue;
 
 
 namespace Runner.Consumer
@@ -18,18 +19,14 @@ namespace Runner.Consumer
     {
         static readonly ConnectionFactory factory = new ConnectionFactory { HostName = "localhost" };
         static readonly IConnection connection = factory.CreateConnection();
-        static readonly IModel channel = connection.CreateModel();
+        
         static QueueSettings _queueSettings;
         static string exchangeName = "testExchange";
         static string queueName = "testQueue";
 
         static void Main(string[] args)
         {
-            //channel.ExchangeDeclare(exchangeName, "fanout");
-            //channel.QueueDeclare(queueName, false, false, true, null);
-            //channel.QueueBind(queueName, exchangeName, "");
-
-            _queueSettings = new QueueSettings { Name = queueName, NoAck = false };
+            _queueSettings = new QueueSettings { Name = queueName, NoAck = true };
 
             Start();
 
@@ -40,7 +37,7 @@ namespace Runner.Consumer
         private static void Start()
         {
             tokenSource = new CancellationTokenSource();
-            _queueSettings.ConsumerName = string.Format("test-{0}", Guid.NewGuid());
+            //_queueSettings.ConsumerName = string.Format("test-{0}", Guid.NewGuid());
 
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
@@ -54,10 +51,21 @@ namespace Runner.Consumer
 
         static void Consume()
         {
-            //var consumer = new ObservableConsumer<string>(channel, _queueSettings);
-            var consumer = new BalancingObservableConsumer<string>(channel, _queueSettings);
+            var consumer = new ObservableSubscription<string>(connection);
+            var stream = consumer.Consume(_queueSettings);
 
-            consumer.Subscribe(message => Console.WriteLine("Received: {0}", message.Body), () => { }, tokenSource.Token);
+            stream.Subscribe(message =>
+                    {
+                        Console.WriteLine("Received (Subscription 1): {0}", message.Body);
+                        Thread.Sleep(100); //Simulate slow
+                    }, () => { }, tokenSource.Token);
+
+            stream.Subscribe(message =>
+            {
+                Console.WriteLine("Received (Subscription 2): {0}", message.Body);
+                Thread.Sleep(200); //Simulate slow
+            }, () => { }, tokenSource.Token);
+
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Runner.Producer
         static void Main(string[] args)
         {
             channel.ExchangeDeclare(exchangeName, "fanout");
-            channel.QueueDeclare(queueName, false, false, true, null);
+            channel.QueueDeclare(queueName, false, false, false, null);
             channel.QueueBind(queueName, exchangeName, "");
 
             Start();
@@ -52,13 +52,13 @@ namespace Runner.Producer
                 DeliveryMode = 1 //1)not durable, 2)durable
             };
 
-            var ob = Observable.Generate(rand.Next(), i => !tokenSource.IsCancellationRequested, i => rand.Next(), i => i, x => TimeSpan.FromMilliseconds(rand.Next(100)));
+            var ob = Observable.Generate(rand.Next(), i => !tokenSource.IsCancellationRequested, i => rand.Next(), i => i, x => TimeSpan.FromMilliseconds(rand.Next(50)));
 
             ob.Subscribe(num =>
             {
                 var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(num));
                 channel.BasicPublish(exchangeName, "", settings, bytes);
-                Console.WriteLine(num);
+                Console.WriteLine("Published: {0}", num);
 
             }, tokenSource.Token);
 

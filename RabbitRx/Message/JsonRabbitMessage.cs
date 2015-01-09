@@ -11,6 +11,20 @@ namespace RabbitRx.Message
 {
     internal class JsonRabbitMessage<TBody> : IRabbitMessage<TBody>
     {
+        public JsonRabbitMessage(){}
+
+        public JsonRabbitMessage(BasicDeliverEventArgs eventArgs)
+        {
+            ConsumerTag = eventArgs.ConsumerTag;
+            DeliveryTag = eventArgs.DeliveryTag;
+            Redelivered = eventArgs.Redelivered;
+            Exchange = eventArgs.Exchange;
+            RoutingKey = eventArgs.RoutingKey;
+            Properties = eventArgs.BasicProperties;
+            RawBody = eventArgs.Body;
+
+        }
+
         public string ConsumerTag { get; set; }
         public ulong DeliveryTag { get; set; }
         public bool Redelivered { get; set; }
@@ -19,18 +33,18 @@ namespace RabbitRx.Message
         public IBasicProperties Properties { get; set; }
         public byte[] RawBody { get; set; }
 
-        private TBody body;
+        private TBody _body;
         public TBody Body
         {
             get
             {
-                if (body == null)
+                if (_body == null)
                 {
                     var jsonStr = Encoding.UTF8.GetString(RawBody);
 
-                    body = JsonConvert.DeserializeObject<TBody>(jsonStr); ;
+                    _body = JsonConvert.DeserializeObject<TBody>(jsonStr); ;
                 }
-                return body;
+                return _body;
             }
         }
     }

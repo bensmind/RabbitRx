@@ -9,13 +9,13 @@ namespace RabbitRx.Message
 {
     public interface IRabbitMessage<out T>
     {
-        string ConsumerTag { get; set; }
-        ulong DeliveryTag { get; set; }
-        bool Redelivered { get; set; }
-        string Exchange { get; set; }
-        string RoutingKey { get; set; }
-        IBasicProperties Properties { get; set; }
-        byte[] RawBody { get; set; }
+        string ConsumerTag { get;  }
+        ulong DeliveryTag { get;  }
+        bool Redelivered { get;  }
+        string Exchange { get; }
+        string RoutingKey { get; }
+        IBasicProperties Properties { get;}
+        byte[] RawBody { get; }
         T Body { get; }
     }
 }
