@@ -55,10 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\BalancingObservableConsumer.cs" />
+    <Compile Include="Client\ObservableQueueingConsumer.cs" />
     <Compile Include="Message\JsonRabbitMessage.cs" />
     <Compile Include="Message\IRabbitMessage.cs" />
     <Compile Include="Client\ObservableConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queue\QueueSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

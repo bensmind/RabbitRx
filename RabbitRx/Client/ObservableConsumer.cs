@@ -142,10 +142,4 @@ namespace RabbitRx.Client
 
     }
 
-    public class QueueSettings
-    {
-        public string Name { get; set; }
-        public bool NoAck { get; set; }
-        public string ConsumerName { get; set; }
-    }
 }
