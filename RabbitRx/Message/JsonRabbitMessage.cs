@@ -9,7 +9,7 @@ using RabbitMQ.Client.Events;
 
 namespace RabbitRx.Message
 {
-    internal class JsonRabbitMessage<TBody> : IRabbitMessage<TBody>
+    public class JsonRabbitMessage<T> : BasicDeliverEventArgs, IRabbitMessage<T>
     {
         public JsonRabbitMessage(){}
 
@@ -20,31 +20,23 @@ namespace RabbitRx.Message
             Redelivered = eventArgs.Redelivered;
             Exchange = eventArgs.Exchange;
             RoutingKey = eventArgs.RoutingKey;
-            Properties = eventArgs.BasicProperties;
-            RawBody = eventArgs.Body;
+            BasicProperties = eventArgs.BasicProperties;
+            Body = eventArgs.Body;
 
         }
 
-        public string ConsumerTag { get; set; }
-        public ulong DeliveryTag { get; set; }
-        public bool Redelivered { get; set; }
-        public string Exchange { get; set; }
-        public string RoutingKey { get; set; }
-        public IBasicProperties Properties { get; set; }
-        public byte[] RawBody { get; set; }
-
-        private TBody _body;
-        public TBody Body
+        private T _payload;
+        public T Payload
         {
             get
             {
-                if (_body == null)
+                if (_payload == null)
                 {
-                    var jsonStr = Encoding.UTF8.GetString(RawBody);
+                    var jsonStr = Encoding.UTF8.GetString(Body);
 
-                    _body = JsonConvert.DeserializeObject<TBody>(jsonStr); ;
+                    _payload = JsonConvert.DeserializeObject<T>(jsonStr); ;
                 }
-                return _body;
+                return _payload;
             }
         }
     }

@@ -14,8 +14,8 @@ namespace RabbitRx.Message
         bool Redelivered { get;  }
         string Exchange { get; }
         string RoutingKey { get; }
-        IBasicProperties Properties { get;}
-        byte[] RawBody { get; }
-        T Body { get; }
+        IBasicProperties BasicProperties { get; }
+        byte[] Body { get; }
+        T Payload { get; }
     }
 }

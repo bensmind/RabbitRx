@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
+using RabbitMQ.Client.MessagePatterns;
 using RabbitRx.Client;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using RabbitRx.Message;
 using RabbitRx.Queue;
 
 
@@ -17,55 +19,55 @@ namespace Runner.Consumer
 {
     class Program
     {
-        static readonly ConnectionFactory factory = new ConnectionFactory { HostName = "localhost" };
-        static readonly IConnection connection = factory.CreateConnection();
-        
-        static QueueSettings _queueSettings;
-        static string exchangeName = "testExchange";
-        static string queueName = "testQueue";
+        static readonly ConnectionFactory Factory = new ConnectionFactory { HostName = "localhost" };
+        static readonly IConnection Connection = Factory.CreateConnection();
+
+        private const string QueueName = "testQueue";
 
         static void Main(string[] args)
         {
-            _queueSettings = new QueueSettings { Name = queueName, NoAck = true };
-
             Start();
-
         }
 
-        private static CancellationTokenSource tokenSource;
+        private static CancellationTokenSource _tokenSource;
 
         private static void Start()
         {
-            tokenSource = new CancellationTokenSource();
-            //_queueSettings.ConsumerName = string.Format("test-{0}", Guid.NewGuid());
+            _tokenSource = new CancellationTokenSource();
 
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
             Task.Run(() => Consume());
+            //Task.Run(() => Subscribe());
             Console.WriteLine("Press Any Key to Stop");
             Console.ReadLine();
-            tokenSource.Cancel();
+            _tokenSource.Cancel();
             Start();
         }
 
+        static readonly Random Rand = new Random();
 
         static void Consume()
         {
-            var consumer = new ObservableSubscription<string>(connection);
-            var stream = consumer.Consume(_queueSettings);
+            var model = Connection.CreateModel();
+            model.BasicQos(0, 50, false);
 
-            stream.Subscribe(message =>
-                    {
-                        Console.WriteLine("Received (Subscription 1): {0}", message.Body);
-                        Thread.Sleep(100); //Simulate slow
-                    }, () => { }, tokenSource.Token);
-
-            stream.Subscribe(message =>
+            var consumer = new JsonSubscriptionConsumer<string>(model, QueueName);
+            
+            consumer.Subscribe(message =>
             {
-                Console.WriteLine("Received (Subscription 2): {0}", message.Body);
-                Thread.Sleep(200); //Simulate slow
-            }, () => { }, tokenSource.Token);
+                Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
+                model.BasicAck(message.DeliveryTag,false);
+                Thread.Sleep(Rand.Next(150)); //Simulate slow
+            }, () => { }, _tokenSource.Token);
 
+            var stream = consumer.Start(_tokenSource.Token);
+
+            stream.ContinueWith(t =>
+            {
+                consumer.Dispose();
+                model.Dispose();
+            });
         }
     }
 }

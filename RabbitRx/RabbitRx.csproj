@@ -54,7 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\ObservableSubscription.cs" />
+    <Compile Include="Client\SubscriptionConsumer.cs" />
     <Compile Include="Message\JsonRabbitMessage.cs" />
     <Compile Include="Message\IRabbitMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
