@@ -11,17 +11,17 @@ namespace RabbitRx.Subscription
     {
         protected readonly Subject<BasicDeliverEventArgs> Subject = new Subject<BasicDeliverEventArgs>();
 
-        protected SubscriptionConsumer(IModel model, string queueName)
+        public SubscriptionConsumer(IModel model, string queueName)
             : base(model, queueName)
         {
         }
 
-        protected SubscriptionConsumer(IModel model, string queueName, bool noAck)
+        public SubscriptionConsumer(IModel model, string queueName, bool noAck)
             : base(model, queueName, noAck)
         {
         }
 
-        protected SubscriptionConsumer(IModel model, string queueName, bool noAck, string consumerTag)
+        public SubscriptionConsumer(IModel model, string queueName, bool noAck, string consumerTag)
             : base(model, queueName, noAck, consumerTag)
         {
         }
