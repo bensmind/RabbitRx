@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
 using RabbitMQ.Client.MessagePatterns;
-using RabbitRx.Client;
+using RabbitRx.Subscription;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using RabbitRx.Message;
@@ -50,14 +50,15 @@ namespace Runner.Consumer
         static void Consume()
         {
             var model = Connection.CreateModel();
+
             model.BasicQos(0, 50, false);
 
-            var consumer = new JsonSubscriptionConsumer<string>(model, QueueName);
+            var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
             
             consumer.Subscribe(message =>
             {
                 Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
-                model.BasicAck(message.DeliveryTag,false);
+                consumer.Ack(message);
                 Thread.Sleep(Rand.Next(150)); //Simulate slow
             }, () => { }, _tokenSource.Token);
 
@@ -65,7 +66,7 @@ namespace Runner.Consumer
 
             stream.ContinueWith(t =>
             {
-                consumer.Dispose();
+                consumer.Close();
                 model.Dispose();
             });
         }

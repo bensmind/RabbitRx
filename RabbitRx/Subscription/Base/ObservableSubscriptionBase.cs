@@ -4,48 +4,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQ.Client.MessagePatterns;
-using RabbitRx.Message;
 
-namespace RabbitRx.Client
+namespace RabbitRx.Subscription.Base
 {
-    public class JsonSubscriptionConsumer<T> : SubscriptionConsumer<IRabbitMessage<T>>
+    public abstract class ObservableSubscriptionBase<TData> : RabbitMQ.Client.MessagePatterns.Subscription, ISubject<BasicDeliverEventArgs, TData>
     {
-        public JsonSubscriptionConsumer(IModel model, string queueName) 
-            : base(model, queueName)
-        {
-        }
-
-        public override void OnNext(BasicDeliverEventArgs value)
-        {
-            var message = new JsonRabbitMessage<T>(value);
-            Subject.OnNext(message);
-        }
-    }
-
-    public class SubscriptionConsumer : SubscriptionConsumer<BasicDeliverEventArgs>
-    {
-        public SubscriptionConsumer(IModel model, string queueName) 
-            : base(model, queueName)
-        {
-        }
-
-        public override void OnNext(BasicDeliverEventArgs value)
-        {
-            Subject.OnNext(value);
-        }
-    }
-
-
-    public abstract class SubscriptionConsumer<TData> : ISubject<BasicDeliverEventArgs, TData>, IDisposable
-    {
-        private readonly Subscription _subscription;
-
         protected readonly Subject<TData> Subject = new Subject<TData>();
 
-        protected SubscriptionConsumer(IModel model, string queueName)
+        protected ObservableSubscriptionBase(IModel model, string queueName) 
+            : base(model, queueName)
         {
-            _subscription = new Subscription(model, queueName, false);
+        }
+
+        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck) 
+            : base(model, queueName, noAck)
+        {
+        }
+
+        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck, string consumerTag) 
+            : base(model, queueName, noAck, consumerTag)
+        {
         }
 
         public virtual Task Start(CancellationToken token)
@@ -57,13 +35,13 @@ namespace RabbitRx.Client
 
         protected virtual void Consume(CancellationToken token)
         {
-            token.Register(_subscription.Close); //This breaks the block below
+            token.Register(Close); //This breaks the block below
 
             try
             {
                 while (!token.IsCancellationRequested)
                 {
-                    var evt = _subscription.Next(); //Blocking de-queue
+                    var evt = Next(); //Blocking de-queue
 
                     if (evt != null)
                     {
@@ -96,11 +74,6 @@ namespace RabbitRx.Client
         public IDisposable Subscribe(IObserver<TData> observer)
         {
             return Subject.Subscribe(observer);
-        }
-
-        public virtual void Dispose()
-        {
-            _subscription.Close();
         }
     }
 }

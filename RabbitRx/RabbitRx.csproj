@@ -54,11 +54,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\SubscriptionConsumer.cs" />
+    <Compile Include="Subscription\Base\ObservableSubscriptionBase.cs" />
     <Compile Include="Message\JsonRabbitMessage.cs" />
     <Compile Include="Message\IRabbitMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queue\QueueSettings.cs" />
+    <Compile Include="Subscription\JsonObservableSubscription.cs" />
+    <Compile Include="Subscription\ObservableSubscription.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
