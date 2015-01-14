@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -10,7 +12,14 @@ using RabbitRx.Message;
 
 namespace RabbitRx.Subscription
 {
-    public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservable<RabbitMessage<T>>
+    public interface IObservableSubscription<out T> : IObservable<T>
+    {
+        Task Start(CancellationToken token, int? timeout = null, Action onQueueEmpty = null);
+        IModel Model { get; }
+        string QueueName { get; }
+    }
+
+    public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservableSubscription<RabbitMessage<T>>
     {
         public JsonObservableSubscription(IModel model, string queueName)
             : base(model, queueName)

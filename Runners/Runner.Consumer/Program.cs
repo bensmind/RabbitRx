@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
 using RabbitMQ.Client.MessagePatterns;
+using RabbitRx.Message;
 using RabbitRx.Subscription;
 
 namespace Runner.Consumer
@@ -32,7 +33,7 @@ namespace Runner.Consumer
 
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
-            Task.Run(() => Consume());
+            Task.Run(() => ConsumeThrottle());
             Console.WriteLine("Press Any Key to Stop");
             Console.ReadLine();
             _tokenSource.Cancel();
@@ -63,5 +64,32 @@ namespace Runner.Consumer
 
             Task.WhenAll(stream1, stream2).ContinueWith(t => model.Dispose());
         }
+
+        static void ConsumeThrottle()
+        {
+            var model = Connection.CreateModel();
+
+            model.BasicQos(0, 50, false);
+
+            var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
+
+            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(consumer, 4);
+
+            throttlingConsumer.Subscribe(message =>
+            {
+                Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
+                consumer.Ack(message);
+                Thread.Sleep(Rand.Next(1500)); //Simulate slow
+            }, _tokenSource.Token);
+
+            var start = throttlingConsumer.Start(_tokenSource.Token, TimeSpan.FromSeconds(5));
+
+            start.ContinueWith(t =>
+            {
+                consumer.Close();
+                model.Dispose();
+            });
+        }
+
     }
 }

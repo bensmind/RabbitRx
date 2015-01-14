@@ -48,7 +48,7 @@ namespace RabbitRx.Subscription
                     {
                         evt = Next(); //Blocking de-queue
                     }
-
+                    
                     if (token.IsCancellationRequested) break;
 
                     if (evt != null)
@@ -65,8 +65,10 @@ namespace RabbitRx.Subscription
                     Subject.OnError(ex);
                 }
             }
-
-            Subject.OnCompleted(); //End of stream
+            if (!Subject.HasObservers)
+            {
+                Subject.OnCompleted(); //End of stream
+            }
         }
     }
 }
