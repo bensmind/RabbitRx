@@ -60,7 +60,7 @@ namespace Runner.Consumer
                 Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
                 consumer.Ack(message);
                 Thread.Sleep(Rand.Next(150)); //Simulate slow
-            }, () => { }, _tokenSource.Token);
+            }, _tokenSource.Token);
 
             var stream = consumer.Start(_tokenSource.Token);
 
