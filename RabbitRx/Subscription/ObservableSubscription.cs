@@ -5,33 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitRx.Subscription.Base;
 
 namespace RabbitRx.Subscription
 {
-    public class ObservableSubscription : ObservableSubscriptionBase<BasicDeliverEventArgs>
+    public class ObservableSubscription : SubscriptionConsumer, IObservable<BasicDeliverEventArgs>
     {
-        public ObservableSubscription(IModel model, string queueName)
+        protected ObservableSubscription(IModel model, string queueName)
             : base(model, queueName)
         {
         }
 
-        public ObservableSubscription(IModel model, string queueName, bool noAck)
+        protected ObservableSubscription(IModel model, string queueName, bool noAck)
             : base(model, queueName, noAck)
         {
         }
 
-        public ObservableSubscription(IModel model, string queueName, bool noAck, string consumerTag)
+        protected ObservableSubscription(IModel model, string queueName, bool noAck, string consumerTag)
             : base(model, queueName, noAck, consumerTag)
         {
         }
 
-        public override void OnNext(BasicDeliverEventArgs value)
-        {
-            Subject.OnNext(value);
-        }
-
-        public override IDisposable Subscribe(IObserver<BasicDeliverEventArgs> observer)
+        public IDisposable Subscribe(IObserver<BasicDeliverEventArgs> observer)
         {
             return Subject.Subscribe(observer);
         }

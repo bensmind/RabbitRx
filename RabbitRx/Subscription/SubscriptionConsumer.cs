@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace RabbitRx.Subscription.Base
+namespace RabbitRx.Subscription
 {
-    public abstract class ObservableSubscriptionBase<TData> : RabbitMQ.Client.MessagePatterns.Subscription, ISubject<BasicDeliverEventArgs, TData>
+    public class SubscriptionConsumer : RabbitMQ.Client.MessagePatterns.Subscription
     {
-        protected readonly Subject<TData> Subject = new Subject<TData>();
+        protected readonly Subject<BasicDeliverEventArgs> Subject = new Subject<BasicDeliverEventArgs>();
 
-        protected ObservableSubscriptionBase(IModel model, string queueName)
+        protected SubscriptionConsumer(IModel model, string queueName)
             : base(model, queueName)
         {
         }
 
-        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck)
+        protected SubscriptionConsumer(IModel model, string queueName, bool noAck)
             : base(model, queueName, noAck)
         {
         }
 
-        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck, string consumerTag)
+        protected SubscriptionConsumer(IModel model, string queueName, bool noAck, string consumerTag)
             : base(model, queueName, noAck, consumerTag)
         {
         }
@@ -55,7 +55,7 @@ namespace RabbitRx.Subscription.Base
 
                     if (evt != null)
                     {
-                        OnNext(evt); //Publish
+                        Subject.OnNext(evt); //Publish
                     }
                     else if (onQueueEmpty != null)
                     {
@@ -64,25 +64,11 @@ namespace RabbitRx.Subscription.Base
                 }
                 catch (Exception ex)
                 {
-                    OnError(ex);
+                    Subject.OnError(ex);
                 }
             }
 
-            OnCompleted(); //End of stream
+            Subject.OnCompleted(); //End of stream
         }
-
-        public abstract void OnNext(BasicDeliverEventArgs value);
-
-        public virtual void OnError(Exception error)
-        {
-            Subject.OnError(error);
-        }
-
-        public virtual void OnCompleted()
-        {
-            Subject.OnCompleted();
-        }
-
-        public abstract IDisposable Subscribe(IObserver<TData> observer);
     }
 }

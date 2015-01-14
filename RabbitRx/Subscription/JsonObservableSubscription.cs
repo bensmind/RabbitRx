@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitRx.Message;
-using RabbitRx.Subscription.Base;
 
 namespace RabbitRx.Subscription
 {
-    public class JsonObservableSubscription<T> : ObservableSubscriptionBase<RabbitMessage<T>>
+    public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservable<RabbitMessage<T>>
     {
         public JsonObservableSubscription(IModel model, string queueName)
             : base(model, queueName)
@@ -28,7 +27,7 @@ namespace RabbitRx.Subscription
         {
         }
 
-        public override void OnNext(BasicDeliverEventArgs value)
+        private RabbitMessage<T> Convert(BasicDeliverEventArgs value)
         {
             var jsonStr = Encoding.UTF8.GetString(value.Body);
 
@@ -36,12 +35,12 @@ namespace RabbitRx.Subscription
 
             var message = new RabbitMessage<T>(value, payload);
 
-            Subject.OnNext(message);
+            return message;
         }
 
-        public override IDisposable Subscribe(IObserver<RabbitMessage<T>> observer)
+        public IDisposable Subscribe(IObserver<RabbitMessage<T>> observer)
         {
-            return Subject.Subscribe(observer);
+            return Subject.Select(Convert).Subscribe(observer);
         }
     }
 }
