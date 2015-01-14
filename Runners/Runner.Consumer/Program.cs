@@ -33,7 +33,6 @@ namespace Runner.Consumer
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
             Task.Run(() => Consume());
-            //Task.Run(() => Subscribe());
             Console.WriteLine("Press Any Key to Stop");
             Console.ReadLine();
             _tokenSource.Cancel();
