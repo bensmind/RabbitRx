@@ -11,52 +11,64 @@ namespace RabbitRx.Subscription.Base
     {
         protected readonly Subject<TData> Subject = new Subject<TData>();
 
-        protected ObservableSubscriptionBase(IModel model, string queueName) 
+        protected ObservableSubscriptionBase(IModel model, string queueName)
             : base(model, queueName)
         {
         }
 
-        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck) 
+        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck)
             : base(model, queueName, noAck)
         {
         }
 
-        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck, string consumerTag) 
+        protected ObservableSubscriptionBase(IModel model, string queueName, bool noAck, string consumerTag)
             : base(model, queueName, noAck, consumerTag)
         {
         }
 
-        public virtual Task Start(CancellationToken token)
+        public virtual Task Start(CancellationToken token, int? timeout = null, Action onQueueEmpty = null)
         {
-            var task = new Task(() => Consume(token), token, TaskCreationOptions.LongRunning);
+            var task = new Task(() => Consume(token, timeout, onQueueEmpty), token, TaskCreationOptions.LongRunning);
             task.Start(TaskScheduler.Default);
             return task;
         }
 
-        protected virtual void Consume(CancellationToken token)
+        protected virtual void Consume(CancellationToken token, int? timeout = null, Action onQueueEmpty = null)
         {
             token.Register(Close); //This breaks the block below
-
-            try
+            
+            while (true)
             {
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    var evt = Next(); //Blocking de-queue
+                    BasicDeliverEventArgs evt;
+                    if (timeout.HasValue)
+                    {
+                        Next(timeout.Value, out evt);
+                    }
+                    else
+                    {
+                        evt = Next(); //Blocking de-queue
+                    }
+
+                    if (token.IsCancellationRequested) break;
 
                     if (evt != null)
                     {
                         OnNext(evt); //Publish
                     }
+                    else if (onQueueEmpty != null)
+                    {
+                        onQueueEmpty();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    OnError(ex);
                 }
             }
-            catch (Exception ex)
-            {
-                OnError(ex);
-            }
-            finally
-            {
-                OnCompleted(); //End of stream
-            }
+
+            OnCompleted(); //End of stream
         }
 
         public abstract void OnNext(BasicDeliverEventArgs value);
@@ -71,9 +83,6 @@ namespace RabbitRx.Subscription.Base
             Subject.OnCompleted();
         }
 
-        public IDisposable Subscribe(IObserver<TData> observer)
-        {
-            return Subject.Subscribe(observer);
-        }
+        public abstract IDisposable Subscribe(IObserver<TData> observer);
     }
 }

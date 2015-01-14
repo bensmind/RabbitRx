@@ -30,5 +30,10 @@ namespace RabbitRx.Subscription
         {
             Subject.OnNext(value);
         }
+
+        public override IDisposable Subscribe(IObserver<BasicDeliverEventArgs> observer)
+        {
+            return Subject.Subscribe(observer);
+        }
     }
 }

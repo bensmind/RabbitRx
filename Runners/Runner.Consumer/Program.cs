@@ -62,9 +62,10 @@ namespace Runner.Consumer
                 Thread.Sleep(Rand.Next(150)); //Simulate slow
             }, _tokenSource.Token);
 
-            var stream = consumer.Start(_tokenSource.Token);
+            var stream1 = consumer.Start(_tokenSource.Token);
+            var stream2 = consumer.Start(_tokenSource.Token);
 
-            stream.ContinueWith(t =>
+            Task.WhenAll(stream1, stream2).ContinueWith(t =>
             {
                 consumer.Close();
                 model.Dispose();
