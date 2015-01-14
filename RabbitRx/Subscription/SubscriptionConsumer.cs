@@ -35,8 +35,6 @@ namespace RabbitRx.Subscription
 
         protected virtual void Consume(CancellationToken token, int? timeout = null, Action onQueueEmpty = null)
         {
-            token.Register(Close); //This breaks the block below
-            
             while (true)
             {
                 try

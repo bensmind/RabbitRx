@@ -9,11 +9,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
 using RabbitMQ.Client.MessagePatterns;
 using RabbitRx.Subscription;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using RabbitRx.Message;
-using RabbitRx.Queue;
-
 
 namespace Runner.Consumer
 {
@@ -54,7 +49,9 @@ namespace Runner.Consumer
             model.BasicQos(0, 50, false);
 
             var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
-            
+
+            _tokenSource.Token.Register(consumer.Close);
+
             consumer.Subscribe(message =>
             {
                 Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
@@ -65,11 +62,7 @@ namespace Runner.Consumer
             var stream1 = consumer.Start(_tokenSource.Token);
             var stream2 = consumer.Start(_tokenSource.Token);
 
-            Task.WhenAll(stream1, stream2).ContinueWith(t =>
-            {
-                consumer.Close();
-                model.Dispose();
-            });
+            Task.WhenAll(stream1, stream2).ContinueWith(t => model.Dispose());
         }
     }
 }
