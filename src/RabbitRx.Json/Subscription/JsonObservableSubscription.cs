@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitRx.Message;
+using RabbitRx.Core.Subscription;
+using RabbitRx.Core.Message;
 
-namespace RabbitRx.Subscription
+namespace RabbitRx.Json.Subscription
 {
-    public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservable<RabbitMessage<T>>
+    public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservableSubscription<RabbitMessage<T>>
     {
         public JsonObservableSubscription(IModel model, string queueName)
             : base(model, queueName)

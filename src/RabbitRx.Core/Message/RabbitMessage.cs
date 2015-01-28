@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace RabbitRx.Message
+namespace RabbitRx.Core.Message
 {
     public class RabbitMessage<T> : BasicDeliverEventArgs
     {
