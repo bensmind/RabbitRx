@@ -55,7 +55,6 @@
     <Compile Include="Message\RabbitMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Subscription\ObservableSubscription.cs" />
-    <Compile Include="Subscription\ThrottlingConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
