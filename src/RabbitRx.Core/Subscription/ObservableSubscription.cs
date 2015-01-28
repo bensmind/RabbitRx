@@ -1,14 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace RabbitRx.Subscription
+namespace RabbitRx.Core.Subscription
 {
-    public class ObservableSubscription : SubscriptionConsumer, IObservable<BasicDeliverEventArgs>
+    public interface IObservableSubscription<out T> : IObservable<T>
+    {
+        Task Start(CancellationToken token, int? timeout = null, Action onQueueEmpty = null);
+        IModel Model { get; }
+        string QueueName { get; }
+    }
+
+    public class ObservableSubscription : SubscriptionConsumer, IObservableSubscription<BasicDeliverEventArgs>
     {
         protected ObservableSubscription(IModel model, string queueName)
             : base(model, queueName)

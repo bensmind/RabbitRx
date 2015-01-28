@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
 using RabbitMQ.Client.MessagePatterns;
-using RabbitRx.Message;
-using RabbitRx.Subscription;
-
+using RabbitRx.Core.Message;
+using RabbitRx.Core.Subscription;
+using RabbitRx.Json.Subscription;
 namespace Runner.Consumer
 {
     class Program

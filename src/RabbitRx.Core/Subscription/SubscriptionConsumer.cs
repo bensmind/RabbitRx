@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace RabbitRx.Subscription
+namespace RabbitRx.Core.Subscription
 {
     public class SubscriptionConsumer : RabbitMQ.Client.MessagePatterns.Subscription
     {

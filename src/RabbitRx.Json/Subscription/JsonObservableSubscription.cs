@@ -8,17 +8,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitRx.Message;
+using RabbitRx.Core.Subscription;
+using RabbitRx.Core.Message;
 
-namespace RabbitRx.Subscription
+namespace RabbitRx.Json.Subscription
 {
-    public interface IObservableSubscription<out T> : IObservable<T>
-    {
-        Task Start(CancellationToken token, int? timeout = null, Action onQueueEmpty = null);
-        IModel Model { get; }
-        string QueueName { get; }
-    }
-
     public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservableSubscription<RabbitMessage<T>>
     {
         public JsonObservableSubscription(IModel model, string queueName)
