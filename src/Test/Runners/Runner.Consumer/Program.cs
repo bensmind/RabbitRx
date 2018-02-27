@@ -54,7 +54,7 @@ namespace Runner.Consumer
                 consumer.Ack(message);
 
                 //Task.Delay(TimeSpan.FromSeconds(Rand.Next(15))); //.Wait(); //Simulate slow
-                //Thread.Sleep(Rand.Next(5000));
+                Thread.Sleep(Rand.Next(2001));
 
             }, _tokenSource.Token);
 
@@ -76,11 +76,12 @@ namespace Runner.Consumer
 
             throttlingConsumer.Subscribe(onNext: message =>
             {
+
                 Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
                 consumer.Ack(message);
 
-                //Task.Delay(TimeSpan.FromSeconds(Rand.Next(15))); //.Wait(); //Simulate slow
-                Thread.Sleep(Rand.Next(5000));
+                //await Task.Delay(TimeSpan.FromSeconds(Rand.Next(60))).ConfigureAwait(false); //Simulate slow
+                Thread.Sleep(Rand.Next(5001));
 
             }, token: _tokenSource.Token);
 

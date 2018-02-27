@@ -30,6 +30,17 @@ namespace RabbitRx.Advanced.Subscription
 
         private void UpdateScale(T last)
         {
+            if (_subscription.Model.IsClosed)
+            {
+                var bColor = Console.BackgroundColor;
+                var fColor = Console.ForegroundColor;
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Queue is Closed");
+                Console.BackgroundColor = bColor;
+                Console.ForegroundColor = fColor;
+                return;
+            }
             var queue = _subscription.Model.QueueDeclarePassive(_subscription.QueueName);
             var thisSample = (int) queue.MessageCount;
             var lastSample = Interlocked.Exchange(ref _processedCount, thisSample);
@@ -45,7 +56,10 @@ namespace RabbitRx.Advanced.Subscription
                     AddWorker();
                 }
             }
-            Console.WriteLine("Thread Count: {0}", _tasks.Count);
+
+            Console.WriteLine();
+            Console.WriteLine(new string('-', 75));
+            Console.WriteLine($"Queue MessageCount: {thisSample}, Last Count: {lastSample}; Thread Count: {_tasks.Count}" );
         }
 
         public Task Start(CancellationToken token, TimeSpan samplingInterval)
