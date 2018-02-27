@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Framing;
-using RabbitMQ.Client.MessagePatterns;
 using RabbitRx.Advanced.Subscription;
 using RabbitRx.Core.Message;
-using RabbitRx.Core.Subscription;
 using RabbitRx.Json.Subscription;
+
 namespace Runner.Consumer
 {
-    class Program
+    public static class Program
     {
-        static readonly ConnectionFactory Factory = new ConnectionFactory { HostName = "localhost" };
-        static readonly IConnection Connection = Factory.CreateConnection();
+        private static readonly ConnectionFactory Factory = new ConnectionFactory { HostName = "localhost" };
+        private static readonly IConnection Connection = Factory.CreateConnection();
 
         private const string QueueName = "testQueue";
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Start();
         }
@@ -34,14 +28,15 @@ namespace Runner.Consumer
 
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
-            Task.Run(() => ConsumeThrottle());
+            //Task.Run(() => ConsumeThrottle());
+            Task.Run(() => Consume());
             Console.WriteLine("Press Any Key to Stop");
             Console.ReadLine();
             _tokenSource.Cancel();
             Start();
         }
 
-        static readonly Random Rand = new Random();
+        private static readonly Random Rand = new Random();
 
         static void Consume()
         {
@@ -55,9 +50,12 @@ namespace Runner.Consumer
 
             consumer.Subscribe(message =>
             {
-                Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
+                Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
                 consumer.Ack(message);
-                Thread.Sleep(Rand.Next(150)); //Simulate slow
+
+                //Task.Delay(TimeSpan.FromSeconds(Rand.Next(15))); //.Wait(); //Simulate slow
+                //Thread.Sleep(Rand.Next(5000));
+
             }, _tokenSource.Token);
 
             var stream1 = consumer.Start(_tokenSource.Token);
@@ -74,14 +72,17 @@ namespace Runner.Consumer
 
             var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
 
-            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(consumer, 4);
+            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(consumer, 64);
 
-            throttlingConsumer.Subscribe(message =>
+            throttlingConsumer.Subscribe(onNext: message =>
             {
-                Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
+                Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
                 consumer.Ack(message);
-                Thread.Sleep(Rand.Next(1500)); //Simulate slow
-            }, _tokenSource.Token);
+
+                //Task.Delay(TimeSpan.FromSeconds(Rand.Next(15))); //.Wait(); //Simulate slow
+                Thread.Sleep(Rand.Next(5000));
+
+            }, token: _tokenSource.Token);
 
             var start = throttlingConsumer.Start(_tokenSource.Token, TimeSpan.FromSeconds(5));
 
