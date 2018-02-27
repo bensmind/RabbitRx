@@ -28,8 +28,8 @@ namespace Runner.Consumer
 
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
-            //Task.Run(() => ConsumeThrottle());
-            Task.Run(() => Consume());
+            Task.Run(() => ConsumeThrottle());
+            //Task.Run(() => Consume());
             Console.WriteLine("Press Any Key to Stop");
             Console.ReadLine();
             _tokenSource.Cancel();
@@ -38,7 +38,7 @@ namespace Runner.Consumer
 
         private static readonly Random Rand = new Random();
 
-        static void Consume()
+        public static void Consume()
         {
             var model = Connection.CreateModel();
 
@@ -64,7 +64,7 @@ namespace Runner.Consumer
             Task.WhenAll(stream1, stream2).ContinueWith(t => model.Dispose());
         }
 
-        static void ConsumeThrottle()
+        public static void ConsumeThrottle()
         {
             var model = Connection.CreateModel();
 

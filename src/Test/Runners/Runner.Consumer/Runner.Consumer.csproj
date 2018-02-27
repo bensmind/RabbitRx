@@ -76,14 +76,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\RabbitRx.Advanced\RabbitRx.Advanced.csproj">
-      <Project>{50329004-1C40-4DF7-9464-659335557AA2}</Project>
-      <Name>RabbitRx.Advanced</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RabbitRx.Json\RabbitRx.Json.csproj">
-      <Project>{B145BAD8-D151-476F-94EC-506B4C86C7CA}</Project>
-      <Name>RabbitRx.Json</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\RabbitRx.Core\RabbitRx.Core.csproj">
       <Project>{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}</Project>
       <Name>RabbitRx.Core</Name>
