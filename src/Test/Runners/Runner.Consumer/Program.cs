@@ -2,9 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
-using RabbitRx.Advanced.Subscription;
 using RabbitRx.Core.Message;
-using RabbitRx.Json.Subscription;
+using RabbitRx.Core.Subscription;
 
 namespace Runner.Consumer
 {
