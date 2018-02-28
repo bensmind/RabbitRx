@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using RabbitRx.Core.Message;
@@ -36,7 +37,7 @@ namespace Runner.Consumer
 
         private static readonly Random Rand = new Random();
 
-        public static void Consume()
+        private static void Consume()
         {
             var model = TestQueueConfig.Connection.CreateModel();
 
@@ -47,26 +48,39 @@ namespace Runner.Consumer
             _tokenSource.Token.Register(consumer.Close);
 
             consumer.Subscribe(message =>
-            {
-                Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
-                consumer.Ack(message);
+                {
+                    Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
+                    consumer.Ack(message);
 
-                //Task.Delay(TimeSpan.FromSeconds(Rand.Next(15))); //.Wait(); //Simulate slow
-                Thread.Sleep(Rand.Next(2001));
+                    Thread.Sleep(Rand.Next(2001));
 
-            }, _tokenSource.Token);
+                },
+                exception =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine(exception.ToString(), ConsoleColor.DarkBlue,
+                        ConsoleColor.Red);
+                },
+                () =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
+                        ConsoleColor.Blue);
+                },
+                _tokenSource.Token);
 
             var stream1 = consumer.Start(_tokenSource.Token);
             var stream2 = consumer.Start(_tokenSource.Token);
 
             Task.WhenAll(stream1, stream2).ContinueWith(t =>
             {
-                Console.WriteLine("-== Closing Queue ==-");
+                Console.WriteLine();
+                RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
+                Console.WriteLine();
+
                 model.Dispose();
             });
         }
 
-        public static void ConsumeThrottle()
+        private static void ConsumeThrottle()
         {
             var model = TestQueueConfig.Connection.CreateModel();
 
@@ -74,24 +88,38 @@ namespace Runner.Consumer
 
             var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
-            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(consumer, 64);
+            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(subscription: consumer,maxTasks: 64, minTasks: 5);
 
             throttlingConsumer.Subscribe(onNext: message =>
-            {
+                {
 
-                Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
-                consumer.Ack(message);
+                    Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
+                    consumer.Ack(message);
 
-                //await Task.Delay(TimeSpan.FromSeconds(Rand.Next(60))).ConfigureAwait(false); //Simulate slow
-                Thread.Sleep(Rand.Next(5001));
+                    Thread.Sleep(Rand.Next(5001));
 
-            }, token: _tokenSource.Token);
+                }, onError: exception =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine(exception.ToString(),
+                        ConsoleColor.DarkBlue,
+                        ConsoleColor.Red);
+                },
+                onCompleted: () =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
+                        ConsoleColor.Blue);
+                }
+
+                , token: _tokenSource.Token);
 
             var start = throttlingConsumer.Start(_tokenSource.Token, TimeSpan.FromSeconds(5));
 
             start.ContinueWith(t =>
             {
-                Console.WriteLine("-== Closing Queue ==-");
+                Console.WriteLine();
+                RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
+                Console.WriteLine();
+
                 consumer.Close();
                 model.Dispose();
             });

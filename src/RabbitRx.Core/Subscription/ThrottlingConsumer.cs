@@ -31,13 +31,7 @@ namespace RabbitRx.Core.Subscription
         {
             if (_subscription.Model.IsClosed)
             {
-                var bColor = Console.BackgroundColor;
-                var fColor = Console.ForegroundColor;
-                Console.BackgroundColor = ConsoleColor.Red;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("Queue is Closed");
-                Console.BackgroundColor = bColor;
-                Console.ForegroundColor = fColor;
+                Formatters.ConsoleWriteFormatter.WriteLine("Queue is Closed", ConsoleColor.Red,ConsoleColor.White);
                 return;
             }
             var queue = _subscription.Model.QueueDeclarePassive(_subscription.QueueName);
@@ -56,9 +50,9 @@ namespace RabbitRx.Core.Subscription
                 }
             }
 
-            Console.WriteLine();
             Console.WriteLine(new string('-', 75));
             Console.WriteLine($"Queue MessageCount: {thisSample}, Last Count: {lastSample}; Thread Count: {_tasks.Count}" );
+            Console.WriteLine();
         }
 
         public Task Start(CancellationToken token, TimeSpan samplingInterval)
