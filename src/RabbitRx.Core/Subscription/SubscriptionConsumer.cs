@@ -55,9 +55,9 @@ namespace RabbitRx.Core.Subscription
                     {
                         Subject.OnNext(evt); //Publish
                     }
-                    else if (onQueueEmpty != null)
+                    else
                     {
-                        onQueueEmpty();
+                        onQueueEmpty?.Invoke();
                     }
                 }
                 catch (Exception ex)

@@ -1,29 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Framing;
-using RabbitMQ.Client.MessagePatterns;
-using RabbitRx.Advanced.Subscription;
 using RabbitRx.Core.Message;
 using RabbitRx.Core.Subscription;
-using RabbitRx.Json.Subscription;
+using Runner.Common;
+
 namespace Runner.Consumer
 {
-    class Program
+    public static class Program
     {
-        static readonly ConnectionFactory Factory = new ConnectionFactory { HostName = "localhost" };
-        static readonly IConnection Connection = Factory.CreateConnection();
 
-        private const string QueueName = "testQueue";
+        private static readonly TestQueueConfiguration TestQueueConfig = TestQueueConfiguration.BuildQueue();
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Start();
+            TestQueueConfig.Dispose();
         }
 
         private static CancellationTokenSource _tokenSource;
@@ -35,58 +28,98 @@ namespace Runner.Consumer
             Console.WriteLine("Rabbit Consumer: Press Enter to Start");
             Console.ReadLine();
             Task.Run(() => ConsumeThrottle());
+            //Task.Run(() => Consume());
             Console.WriteLine("Press Any Key to Stop");
             Console.ReadLine();
             _tokenSource.Cancel();
             Start();
         }
 
-        static readonly Random Rand = new Random();
+        private static readonly Random Rand = new Random();
 
-        static void Consume()
+        private static void Consume()
         {
-            var model = Connection.CreateModel();
+            var model = TestQueueConfig.Connection.CreateModel();
 
             model.BasicQos(0, 50, false);
 
-            var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
+            var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
             _tokenSource.Token.Register(consumer.Close);
 
             consumer.Subscribe(message =>
-            {
-                Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
-                consumer.Ack(message);
-                Thread.Sleep(Rand.Next(150)); //Simulate slow
-            }, _tokenSource.Token);
+                {
+                    Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
+                    consumer.Ack(message);
+
+                    Thread.Sleep(Rand.Next(2001));
+
+                },
+                exception =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine(exception.ToString(), ConsoleColor.DarkBlue,
+                        ConsoleColor.Red);
+                },
+                () =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
+                        ConsoleColor.Blue);
+                },
+                _tokenSource.Token);
 
             var stream1 = consumer.Start(_tokenSource.Token);
             var stream2 = consumer.Start(_tokenSource.Token);
 
-            Task.WhenAll(stream1, stream2).ContinueWith(t => model.Dispose());
+            Task.WhenAll(stream1, stream2).ContinueWith(t =>
+            {
+                Console.WriteLine();
+                RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
+                Console.WriteLine();
+
+                model.Dispose();
+            });
         }
 
-        static void ConsumeThrottle()
+        private static void ConsumeThrottle()
         {
-            var model = Connection.CreateModel();
+            var model = TestQueueConfig.Connection.CreateModel();
 
             model.BasicQos(0, 50, false);
 
-            var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
+            var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
-            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(consumer, 4);
+            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(subscription: consumer,maxTasks: 64, minTasks: 5);
 
-            throttlingConsumer.Subscribe(message =>
-            {
-                Console.WriteLine("Received (Thread {1}): {0}", message.Payload, Thread.CurrentThread.GetHashCode());
-                consumer.Ack(message);
-                Thread.Sleep(Rand.Next(1500)); //Simulate slow
-            }, _tokenSource.Token);
+            throttlingConsumer.Subscribe(onNext: message =>
+                {
+
+                    Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
+                    consumer.Ack(message);
+
+                    Thread.Sleep(Rand.Next(5001));
+
+                }, onError: exception =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine(exception.ToString(),
+                        ConsoleColor.DarkBlue,
+                        ConsoleColor.Red);
+                },
+                onCompleted: () =>
+                {
+                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
+                        ConsoleColor.Blue);
+                }
+
+                , token: _tokenSource.Token);
 
             var start = throttlingConsumer.Start(_tokenSource.Token, TimeSpan.FromSeconds(5));
 
             start.ContinueWith(t =>
             {
+                Console.WriteLine();
+                RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
+                Console.WriteLine();
+
                 consumer.Close();
                 model.Dispose();
             });
