@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using RabbitMQ.Client;
 using RabbitRx.Core.Message;
 using RabbitRx.Core.Subscription;
+using Runner.Common;
 
 namespace Runner.Consumer
 {
     public static class Program
     {
-        private static readonly ConnectionFactory Factory = new ConnectionFactory { HostName = "localhost" };
-        private static readonly IConnection Connection = Factory.CreateConnection();
 
-        private const string QueueName = "testQueue";
+        private static readonly TestQueueConfiguration TestQueueConfig = TestQueueConfiguration.BuildQueue();
 
         public static void Main(string[] args)
         {
             Start();
+            TestQueueConfig.Dispose();
         }
 
         private static CancellationTokenSource _tokenSource;
@@ -39,11 +38,11 @@ namespace Runner.Consumer
 
         public static void Consume()
         {
-            var model = Connection.CreateModel();
+            var model = TestQueueConfig.Connection.CreateModel();
 
             model.BasicQos(0, 50, false);
 
-            var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
+            var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
             _tokenSource.Token.Register(consumer.Close);
 
@@ -60,16 +59,20 @@ namespace Runner.Consumer
             var stream1 = consumer.Start(_tokenSource.Token);
             var stream2 = consumer.Start(_tokenSource.Token);
 
-            Task.WhenAll(stream1, stream2).ContinueWith(t => model.Dispose());
+            Task.WhenAll(stream1, stream2).ContinueWith(t =>
+            {
+                Console.WriteLine("-== Closing Queue ==-");
+                model.Dispose();
+            });
         }
 
         public static void ConsumeThrottle()
         {
-            var model = Connection.CreateModel();
+            var model = TestQueueConfig.Connection.CreateModel();
 
             model.BasicQos(0, 50, false);
 
-            var consumer = new JsonObservableSubscription<string>(model, QueueName, false);
+            var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
             var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(consumer, 64);
 
@@ -88,6 +91,7 @@ namespace Runner.Consumer
 
             start.ContinueWith(t =>
             {
+                Console.WriteLine("-== Closing Queue ==-");
                 consumer.Close();
                 model.Dispose();
             });

@@ -6,25 +6,19 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Framing;
+using Runner.Common;
 
 namespace Runner.Producer
 {
     public static class Program
     {
-        private static readonly ConnectionFactory Factory = new ConnectionFactory { HostName = "localhost" };
-        private static readonly IConnection Connection = Factory.CreateConnection();
-        private static readonly IModel Channel = Connection.CreateModel();
+        private static readonly TestQueueConfiguration TestQueueConfig = TestQueueConfiguration.BuildFanoutExchangeQueue();
 
-        private const string ExchangeName = "testExchange";
-        private const string QueueName = "testQueue";
-
+        
         public static void Main(string[] args)
         {
-            Channel.ExchangeDeclare(ExchangeName, "fanout");
-            Channel.QueueDeclare(QueueName, false, false, false, null);
-            Channel.QueueBind(QueueName, ExchangeName, "");
-
             Start();
+            TestQueueConfig.Dispose();
         }
 
         private static CancellationTokenSource _tokenSource;
@@ -44,27 +38,29 @@ namespace Runner.Producer
 
         private static void Produce()
         {
-            var rand = new Random();
+            var rand = new Random((int) DateTime.UtcNow.Ticks);
             var settings = new BasicProperties()
             {
                 ContentType = "text/plain",
                 DeliveryMode = 1 //1)not durable, 2)durable
             };
 
-            var ob = Observable.Generate(rand.Next(), 
-                i => !_tokenSource.IsCancellationRequested, 
-                i => rand.Next(), 
-                i => i, 
-                x => TimeSpan.FromMilliseconds(rand.Next(500)));
+            var ob = Observable.Generate(rand.Next(),
+                i => !_tokenSource.IsCancellationRequested,
+                i => rand.Next(),
+                i => i,
+                x => TimeSpan.FromMilliseconds(rand.Next(250)));
 
             ob.Subscribe(num =>
             {
                 var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(num));
-                Channel.BasicPublish(ExchangeName, "", settings, bytes);
+                TestQueueConfig?.Channel.BasicPublish(
+                    exchange: TestQueueConfig.ExchangeName, 
+                    routingKey: "",
+                    basicProperties: settings, 
+                    body: bytes);
                 Console.WriteLine("Published: {0}", num);
-
             }, _tokenSource.Token);
-
         }
     }
 }

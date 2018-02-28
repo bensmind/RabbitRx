@@ -80,6 +80,10 @@
       <Project>{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}</Project>
       <Name>RabbitRx.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Runner.Common\Runner.Common.csproj">
+      <Project>{5f093596-3d3e-4ea8-a236-915a67a53286}</Project>
+      <Name>Runner.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
