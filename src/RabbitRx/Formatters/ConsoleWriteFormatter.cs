@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RabbitRx.Core.Formatters
+namespace RabbitRx.Formatters
 {
     public class ConsoleWriteFormatter
     {

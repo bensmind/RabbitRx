@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RabbitRx.Core.Subscription
+namespace RabbitRx.Subscription
 {
     public class ThrottlingConsumer<T> : IObservable<T> 
     {

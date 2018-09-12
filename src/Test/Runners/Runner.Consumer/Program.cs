@@ -2,8 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using RabbitRx.Core.Message;
-using RabbitRx.Core.Subscription;
+using RabbitRx.Formatters;
+using RabbitRx.Message;
+using RabbitRx.Subscription;
 using Runner.Common;
 
 namespace Runner.Consumer
@@ -57,12 +58,12 @@ namespace Runner.Consumer
                 },
                 exception =>
                 {
-                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine(exception.ToString(), ConsoleColor.DarkBlue,
+                    ConsoleWriteFormatter.WriteLine(exception.ToString(), ConsoleColor.DarkBlue,
                         ConsoleColor.Red);
                 },
                 () =>
                 {
-                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
+                    ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
                         ConsoleColor.Blue);
                 },
                 _tokenSource.Token);
@@ -73,7 +74,7 @@ namespace Runner.Consumer
             Task.WhenAll(stream1, stream2).ContinueWith(t =>
             {
                 Console.WriteLine();
-                RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
+                ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
                 Console.WriteLine();
 
                 model.Dispose();
@@ -100,13 +101,13 @@ namespace Runner.Consumer
 
                 }, onError: exception =>
                 {
-                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine(exception.ToString(),
+                    ConsoleWriteFormatter.WriteLine(exception.ToString(),
                         ConsoleColor.DarkBlue,
                         ConsoleColor.Red);
                 },
                 onCompleted: () =>
                 {
-                    RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
+                    ConsoleWriteFormatter.WriteLine("-== Completed ==-", ConsoleColor.White,
                         ConsoleColor.Blue);
                 }
 
@@ -117,7 +118,7 @@ namespace Runner.Consumer
             start.ContinueWith(t =>
             {
                 Console.WriteLine();
-                RabbitRx.Core.Formatters.ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
+                ConsoleWriteFormatter.WriteLine("-== Closing Queue ==-", ConsoleColor.Red, ConsoleColor.White);
                 Console.WriteLine();
 
                 consumer.Close();

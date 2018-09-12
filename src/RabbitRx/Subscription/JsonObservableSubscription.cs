@@ -4,9 +4,9 @@ using System.Text;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitRx.Core.Message;
+using RabbitRx.Message;
 
-namespace RabbitRx.Core.Subscription
+namespace RabbitRx.Subscription
 {
     public class JsonObservableSubscription<T> : SubscriptionConsumer, IObservableSubscription<RabbitMessage<T>>
     {

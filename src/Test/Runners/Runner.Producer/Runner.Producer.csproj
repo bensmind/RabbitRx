@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Runner.Producer</RootNamespace>
     <AssemblyName>Runner.Producer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -76,6 +76,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\RabbitRx\RabbitRx.csproj">
+      <Project>{f15c74ef-394a-47a1-aa9c-55fe5ba5fd9e}</Project>
+      <Name>RabbitRx</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Runner.Common\Runner.Common.csproj">
       <Project>{5f093596-3d3e-4ea8-a236-915a67a53286}</Project>
       <Name>Runner.Common</Name>
