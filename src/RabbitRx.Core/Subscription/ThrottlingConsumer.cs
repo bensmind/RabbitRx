@@ -50,6 +50,7 @@ namespace RabbitRx.Core.Subscription
                 }
             }
 
+            Console.Clear();
             Console.WriteLine(new string('-', 75));
             Console.WriteLine($"Queue MessageCount: {thisSample}, Last Count: {lastSample}; Thread Count: {_tasks.Count}" );
             Console.WriteLine();

@@ -88,7 +88,7 @@ namespace Runner.Consumer
 
             var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
-            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(subscription: consumer,maxTasks: 64, minTasks: 5);
+            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(subscription: consumer,maxTasks: 64, minTasks: 10);
 
             throttlingConsumer.Subscribe(onNext: message =>
                 {
@@ -96,7 +96,7 @@ namespace Runner.Consumer
                     Console.WriteLine($"Received (Thread {Thread.CurrentThread.GetHashCode()}): {message.Payload}");
                     consumer.Ack(message);
 
-                    Thread.Sleep(Rand.Next(5001));
+                    Thread.Sleep(Rand.Next(2501));
 
                 }, onError: exception =>
                 {
