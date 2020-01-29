@@ -6,11 +6,11 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RabbitRx.Subscription
+namespace RabbitRx
 {
-    public class ThrottlingConsumer<T> : IObservable<T> 
+    public class ThrottlingConsumer<T> : IObservable<T>
     {
-        private readonly Subject<T>  _subject = new Subject<T>();
+        private readonly Subject<T> _subject = new Subject<T>();
         private readonly int _maxTasks;
         private readonly int _minTasks;
         private readonly IObservableSubscription<T> _subscription;
@@ -31,11 +31,11 @@ namespace RabbitRx.Subscription
         {
             if (_subscription.Model.IsClosed)
             {
-                Formatters.ConsoleWriteFormatter.WriteLine("Queue is Closed", ConsoleColor.Red,ConsoleColor.White);
+                Formatters.ConsoleWriteFormatter.WriteLine("Queue is Closed", ConsoleColor.Red, ConsoleColor.White);
                 return;
             }
             var queue = _subscription.Model.QueueDeclarePassive(_subscription.QueueName);
-            var thisSample = (int) queue.MessageCount;
+            var thisSample = (int)queue.MessageCount;
             var lastSample = Interlocked.Exchange(ref _processedCount, thisSample);
 
             if (lastSample != 0)
@@ -52,7 +52,7 @@ namespace RabbitRx.Subscription
 
             Console.Clear();
             Console.WriteLine(new string('-', 75));
-            Console.WriteLine($"Queue MessageCount: {thisSample}, Last Count: {lastSample}; Thread Count: {_tasks.Count}" );
+            Console.WriteLine($"Queue MessageCount: {thisSample}, Last Count: {lastSample}; Thread Count: {_tasks.Count}");
             Console.WriteLine();
         }
 

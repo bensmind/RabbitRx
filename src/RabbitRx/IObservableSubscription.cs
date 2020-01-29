@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 
-namespace RabbitRx.Subscription
+namespace RabbitRx
 {
     public interface IObservableSubscription<out T> : IObservable<T>
     {
