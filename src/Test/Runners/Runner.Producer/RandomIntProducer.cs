@@ -42,7 +42,7 @@ namespace Runner.Producer
                 i => !_tokenSource.IsCancellationRequested,
                 i => rand.Next(),
                 i => i,
-                x => TimeSpan.FromMilliseconds(rand.Next(250)));
+                x => TimeSpan.FromMilliseconds(rand.Next(100)));
 
             ob.Subscribe(num =>
             {

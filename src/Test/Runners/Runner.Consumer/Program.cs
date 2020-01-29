@@ -89,7 +89,7 @@ namespace Runner.Consumer
 
             var consumer = new JsonObservableSubscription<string>(model, TestQueueConfig.QueueName, false);
 
-            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(subscription: consumer,maxTasks: 64, minTasks: 10);
+            var throttlingConsumer = new ThrottlingConsumer<RabbitMessage<string>>(subscription: consumer,maxTasks: 64, minTasks: 2);
 
             throttlingConsumer.Subscribe(onNext: message =>
                 {
