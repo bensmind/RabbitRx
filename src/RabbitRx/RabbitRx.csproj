@@ -80,13 +80,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Formatters\ConsoleWriteFormatter.cs" />
-    <Compile Include="Subscription\IObservableSubscription.cs" />
+    <Compile Include="IObservableSubscription.cs" />
     <Compile Include="Subscription\JsonObservableSubscription.cs" />
     <Compile Include="Subscription\SubscriptionConsumer.cs" />
     <Compile Include="Message\RabbitMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Subscription\ObservableSubscription.cs" />
-    <Compile Include="Subscription\ThrottlingConsumer.cs" />
+    <Compile Include="ThrottlingConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

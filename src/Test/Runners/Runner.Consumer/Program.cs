@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using RabbitRx;
 using RabbitRx.Formatters;
 using RabbitRx.Message;
 using RabbitRx.Subscription;
