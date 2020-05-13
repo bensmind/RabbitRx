@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner.Consumer", "Test\Runners\Runner.Consumer\Runner.Consumer.csproj", "{5EBF8A63-AC76-4390-ABDF-BAAB92F0FF94}"
 EndProject
@@ -14,6 +14,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner.Common", "Test\Runners\Runner.Common\Runner.Common.csproj", "{5F093596-3D3E-4EA8-A236-915A67A53286}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitRx", "RabbitRx\RabbitRx.csproj", "{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MassTransit", "MassTransit", "{FDD38A1D-5304-4666-A905-12524B2DE0E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.MyMassTransit.Producer", "PoC.MyMassTransit.Producer\PoC.MyMassTransit.Producer.csproj", "{73A5BB9F-0229-493B-8B28-F651DC582378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.MyMassTransit.Consumer", "PoC.MyMassTransit.Consumer\PoC.MyMassTransit.Consumer.csproj", "{2CE44AD5-27A2-4961-AEFD-128A0CDB142A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.MyMassTransit.Common", "PoC.MyMassTransit.Common\PoC.MyMassTransit.Common.csproj", "{E162EF08-5C91-4AA0-8AD9-D6036C608F96}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +45,18 @@ Global
 		{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F15C74EF-394A-47A1-AA9C-55FE5BA5FD9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73A5BB9F-0229-493B-8B28-F651DC582378}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73A5BB9F-0229-493B-8B28-F651DC582378}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73A5BB9F-0229-493B-8B28-F651DC582378}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73A5BB9F-0229-493B-8B28-F651DC582378}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CE44AD5-27A2-4961-AEFD-128A0CDB142A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CE44AD5-27A2-4961-AEFD-128A0CDB142A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CE44AD5-27A2-4961-AEFD-128A0CDB142A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CE44AD5-27A2-4961-AEFD-128A0CDB142A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +66,9 @@ Global
 		{980D9548-2768-4814-90A9-B9EA08ADC48F} = {43DE2A5C-A0F7-477F-9C5C-A4C38AAED191}
 		{43DE2A5C-A0F7-477F-9C5C-A4C38AAED191} = {60A89788-0974-4733-BF8B-B68F1A87757D}
 		{5F093596-3D3E-4EA8-A236-915A67A53286} = {43DE2A5C-A0F7-477F-9C5C-A4C38AAED191}
+		{73A5BB9F-0229-493B-8B28-F651DC582378} = {FDD38A1D-5304-4666-A905-12524B2DE0E4}
+		{2CE44AD5-27A2-4961-AEFD-128A0CDB142A} = {FDD38A1D-5304-4666-A905-12524B2DE0E4}
+		{E162EF08-5C91-4AA0-8AD9-D6036C608F96} = {FDD38A1D-5304-4666-A905-12524B2DE0E4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01FEFBA1-1204-403D-8A22-FFAB0CFC4E95}
