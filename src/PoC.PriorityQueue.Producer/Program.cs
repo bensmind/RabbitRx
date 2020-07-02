@@ -11,16 +11,15 @@ namespace PoC.PriorityQueue.Producer
         {
             var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
-                cfg.Host("localhost", "/test-priority_queue");
+                cfg.Host("localhost");
 
-                cfg.ReceiveEndpoint("test-priority_queue", cep =>
-                {
-                    cep.EnablePriority(10);
-                });
+                //cfg.ReceiveEndpoint("test-priority_queue", cep =>
+                //{
+                //    cep.EnablePriority(10);
+                //});
 
             });
             
-
             // Important! The bus must be started before using it!
             await busControl.StartAsync();
             try
@@ -58,8 +57,6 @@ namespace PoC.PriorityQueue.Producer
 
                         
                     }
-
-                    
 
                 }
                 while (true);
