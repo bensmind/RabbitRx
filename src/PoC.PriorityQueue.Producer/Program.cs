@@ -54,8 +54,6 @@ namespace PoC.PriorityQueue.Producer
                                 x.SetPriority((byte) priority);
                                 
                             });
-
-                        
                     }
 
                 }

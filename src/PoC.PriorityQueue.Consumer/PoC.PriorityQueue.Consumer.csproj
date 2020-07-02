@@ -125,5 +125,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PoC.PriorityQueue\PoC.PriorityQueue.csproj">
+      <Project>{4d8cf981-0cdf-4b8e-b104-47597bf74fae}</Project>
+      <Name>PoC.PriorityQueue</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
