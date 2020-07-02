@@ -21,7 +21,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.MyMassTransit.Producer"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.MyMassTransit.Consumer", "PoC.MyMassTransit.Consumer\PoC.MyMassTransit.Consumer.csproj", "{2CE44AD5-27A2-4961-AEFD-128A0CDB142A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.MyMassTransit.Common", "PoC.MyMassTransit.Common\PoC.MyMassTransit.Common.csproj", "{E162EF08-5C91-4AA0-8AD9-D6036C608F96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoC.MyMassTransit.Common", "PoC.MyMassTransit.Common\PoC.MyMassTransit.Common.csproj", "{E162EF08-5C91-4AA0-8AD9-D6036C608F96}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Priority Queue", "Priority Queue", "{597A5A2B-CAD7-4C03-9558-9A24F7E58297}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.PriorityQueue", "PoC.PriorityQueue\PoC.PriorityQueue.csproj", "{4D8CF981-0CDF-4B8E-B104-47597BF74FAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.PriorityQueue.Producer", "PoC.PriorityQueue.Producer\PoC.PriorityQueue.Producer.csproj", "{A1196787-8312-41FB-AD47-CE63319C3403}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.PriorityQueue.Consumer", "PoC.PriorityQueue.Consumer\PoC.PriorityQueue.Consumer.csproj", "{06735485-792F-43DC-89DB-8A6764D98BF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +65,18 @@ Global
 		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E162EF08-5C91-4AA0-8AD9-D6036C608F96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D8CF981-0CDF-4B8E-B104-47597BF74FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D8CF981-0CDF-4B8E-B104-47597BF74FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D8CF981-0CDF-4B8E-B104-47597BF74FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D8CF981-0CDF-4B8E-B104-47597BF74FAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1196787-8312-41FB-AD47-CE63319C3403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1196787-8312-41FB-AD47-CE63319C3403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1196787-8312-41FB-AD47-CE63319C3403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1196787-8312-41FB-AD47-CE63319C3403}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06735485-792F-43DC-89DB-8A6764D98BF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06735485-792F-43DC-89DB-8A6764D98BF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06735485-792F-43DC-89DB-8A6764D98BF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06735485-792F-43DC-89DB-8A6764D98BF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +89,9 @@ Global
 		{73A5BB9F-0229-493B-8B28-F651DC582378} = {FDD38A1D-5304-4666-A905-12524B2DE0E4}
 		{2CE44AD5-27A2-4961-AEFD-128A0CDB142A} = {FDD38A1D-5304-4666-A905-12524B2DE0E4}
 		{E162EF08-5C91-4AA0-8AD9-D6036C608F96} = {FDD38A1D-5304-4666-A905-12524B2DE0E4}
+		{4D8CF981-0CDF-4B8E-B104-47597BF74FAE} = {597A5A2B-CAD7-4C03-9558-9A24F7E58297}
+		{A1196787-8312-41FB-AD47-CE63319C3403} = {597A5A2B-CAD7-4C03-9558-9A24F7E58297}
+		{06735485-792F-43DC-89DB-8A6764D98BF8} = {597A5A2B-CAD7-4C03-9558-9A24F7E58297}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01FEFBA1-1204-403D-8A22-FFAB0CFC4E95}
