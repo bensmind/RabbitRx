@@ -24,6 +24,8 @@ namespace PoC.PriorityQueue.Producer
             await busControl.StartAsync();
             try
             {
+                var rnd = new Random((int) DateTime.UtcNow.Ticks);
+
                 do
                 {
                     string value = await Task.Run(() =>
@@ -43,10 +45,11 @@ namespace PoC.PriorityQueue.Producer
                     int priority = 1;
                     for (int i = 0; i < numberOfMessages; i++)
                     {
-                        priority = priority >= 10 ? 1 : priority + 1;
+                        //priority = priority >= 10 ? 1 : priority + 1;
+                        priority = rnd.Next(1,10);
                         await busControl.Publish<IValueEntered>(new
                             {
-                                Value = value,
+                                Value = i,
                                 Priority = priority
                             },
                             x =>

@@ -40,6 +40,7 @@ namespace PoC.PriorityQueue.Consumer
             return Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
                 cfg.Host("localhost");
+                cfg.PrefetchCount = 2;
                 cfg.EnablePriority(10);
 
                 cfg.ReceiveEndpoint("event_queue", e =>
